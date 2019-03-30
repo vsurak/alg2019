@@ -5,7 +5,10 @@
  * Description: main program file
  */
 
-import { MIDI } from 'midi.js'; 
+import {MidiWriter} from 'midi-writer-js';
+
+const MIDINOTE_POSITION = 0;
+const DURATION_POSITION = 1;
 const TIME_POSITION = 2;
 
 export class MidiPlayer {
@@ -15,15 +18,21 @@ export class MidiPlayer {
     this.song = this.sortSong(pSong);
   }
 
-  public play() : void {
-    // MIDI.loadPlugin({
-    //   instrument: "acoustic_grand_piano", // or the instrument code 1 (aka the default)
-    //   instruments: [ "acoustic_grand_piano", "acoustic_guitar_nylon" ], // or multiple instruments
-    //   onsuccess: function() {
-    //     console.log("Connected");
-    //    }
-    // });
-    console.log(this.song);
+  public buildMidiFile() : void {
+
+    // Start with a new track
+    var track = new MidiWriter.Track();
+    // Add some notes:
+    this.song.forEach(note => {
+      var noteEvent = new MidiWriter.NoteEvent({pitch:[note[MIDINOTE_POSITION]], 
+                                                duration: Math.ceil(4-note[DURATION_POSITION] / 300), 
+                                                startTick: Math.floor(note[TIME_POSITION])});
+      track.addEvent(noteEvent);
+    });
+    
+    // Generate a data URI
+    var write = new MidiWriter.Writer(track);
+    console.log(write.dataUri());
   }
 
   private sortSong(pSong: number[][]) : number[][] {

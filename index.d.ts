@@ -1,1 +1,1 @@
-declare module 'midi.js';
+declare module 'midi-writer-js';
